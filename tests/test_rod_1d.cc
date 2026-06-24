@@ -5,30 +5,10 @@
 
 int main() {
   Region1D regions[] = {
-      {.x = 0.0,
-       .length = 0.40,
-       .lambda = 400.0,
-       .c_vol = 3.45e6,
-       .initial_temperature = 20.0,
-       .heat_source = 0},
-      {.x = 0.40,
-       .length = 0.20,
-       .lambda = 50.0,
-       .c_vol = 3.5e6,
-       .initial_temperature = 200.0,
-       .heat_source = 1},
-      {.x = 0.60,
-       .length = 0.25,
-       .lambda = 0.04,
-       .c_vol = 1.0e6,
-       .initial_temperature = 20.0,
-       .heat_source = 0},
-      {.x = 0.85,
-       .length = 0.15,
-       .lambda = 50.0,
-       .c_vol = 3.5e6,
-       .initial_temperature = 300.0,
-       .heat_source = 1},
+      {.x = 0.0, .length = 0.40, .lambda = 400.0, .c_vol = 3.45e6, .initial_temperature = 20.0, .heat_source = 0},
+      {.x = 0.40, .length = 0.20, .lambda = 50.0, .c_vol = 3.5e6, .initial_temperature = 200.0, .heat_source = 1},
+      {.x = 0.60, .length = 0.25, .lambda = 0.04, .c_vol = 1.0e6, .initial_temperature = 20.0, .heat_source = 0},
+      {.x = 0.85, .length = 0.15, .lambda = 50.0, .c_vol = 3.5e6, .initial_temperature = 300.0, .heat_source = 1},
   };
 
   char error[256] = {};

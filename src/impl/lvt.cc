@@ -71,8 +71,10 @@ static std::optional<std::string> dispatch_compute_1d(SpatialGrid1D &grid, doubl
   case 1:
     return std::string("SIMD backend is not implemented");
   case 2:
-    return std::string("naive CUDA backend is not implemented");
+    return std::string("multithreaded SIMD backend is not implemented");
   case 3:
+    return std::string("naive CUDA backend is not implemented");
+  case 4:
     return std::string("optimized CUDA backend is not implemented");
   default:
     return std::string("unsupported backend");
@@ -87,8 +89,10 @@ static std::optional<std::string> dispatch_compute_2d(SpatialGrid2D &grid, doubl
   case 1:
     return std::string("SIMD backend is not implemented");
   case 2:
-    return std::string("naive CUDA backend is not implemented");
+    return std::string("multithreaded SIMD backend is not implemented");
   case 3:
+    return std::string("naive CUDA backend is not implemented");
+  case 4:
     return std::string("optimized CUDA backend is not implemented");
   default:
     return std::string("unsupported backend");

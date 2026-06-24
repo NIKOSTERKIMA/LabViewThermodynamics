@@ -4,7 +4,8 @@
 #include <utility>
 #include <vector>
 
-std::optional<std::string> lvt_compute_temperatures_naive_1d(SpatialGrid1D &grid, double time_step, double simulation_time) {
+std::optional<std::string> lvt_compute_temperatures_naive_1d(SpatialGrid1D &grid, double time_step,
+                                                             double simulation_time) {
   const size_t cell_count = grid.cells.size();
   std::vector<double> current(cell_count);
   std::vector<double> next(cell_count);
@@ -46,7 +47,8 @@ std::optional<std::string> lvt_compute_temperatures_naive_1d(SpatialGrid1D &grid
   return std::nullopt;
 }
 
-std::optional<std::string> lvt_compute_temperatures_naive_2d(SpatialGrid2D &grid, double time_step, double simulation_time) {
+std::optional<std::string> lvt_compute_temperatures_naive_2d(SpatialGrid2D &grid, double time_step,
+                                                             double simulation_time) {
   const size_t cell_count = grid.cells.size();
   std::vector<double> current(cell_count);
   std::vector<double> next(cell_count);

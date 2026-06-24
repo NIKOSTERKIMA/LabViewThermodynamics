@@ -1,7 +1,18 @@
 #ifndef LVT_H
 #define LVT_H
 
+#ifdef __cplusplus
 #include <cstdint>
+#else
+typedef signed char int8_t;
+typedef unsigned char uint8_t;
+typedef signed short int16_t;
+typedef unsigned short uint16_t;
+typedef signed int int32_t;
+typedef unsigned int uint32_t;
+typedef signed long long int64_t;
+typedef unsigned long long uint64_t;
+#endif
 
 #ifdef _WIN32
 #ifdef LVT_BUILD
@@ -48,7 +59,7 @@ typedef struct {
 #pragma pack(pop)
 
 // Shared LabView facing dll interface. Backend dispatch argument chooses concrete computational engine/implementation.
-// 0 - naive, 1 - SIMD, 2 - naive CUDA, 3 - optimized CUDA
+// 0 - naive, 1 - SIMD, 2 - SIMD+MT, 3 - naive CUDA, 4 - optimized CUDA
 // Returns 0 if successful, 1 if error.
 LVT_API uint8_t LVT_CALL lvt_compute_temperatures_1d(Region1D *regions, uint32_t region_count, double spatial_step,
                                                      double time_step, double simulation_time, double *x_out,

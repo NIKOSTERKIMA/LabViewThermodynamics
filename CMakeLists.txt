@@ -20,3 +20,7 @@ target_include_directories(test_rod_1d PRIVATE src)
 add_executable(test_plate_2d tests/test_plate_2d.cc)
 target_link_libraries(test_plate_2d PRIVATE labview_thermodynamics)
 target_include_directories(test_plate_2d PRIVATE src)
+
+add_executable(test_plate_2d_radiation tests/test_plate_2d_radiation.cc)
+target_link_libraries(test_plate_2d_radiation PRIVATE labview_thermodynamics)
+target_include_directories(test_plate_2d_radiation PRIVATE src)

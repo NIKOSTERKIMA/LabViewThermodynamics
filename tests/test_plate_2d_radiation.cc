@@ -1,0 +1,67 @@
+#include "lvt.h"
+
+#include <cstdio>
+#include <vector>
+
+int main() {
+  const double region_x[] = {0.0, 0.50, 0.0, 0.50};
+  const double region_y[] = {0.0, 0.0, 0.50, 0.50};
+  const double region_width[] = {0.50, 0.50, 0.50, 0.50};
+  const double region_height[] = {0.50, 0.50, 0.50, 0.50};
+  const double region_lambda[] = {400.0, 50.0, 0.04, 50.0};
+  const double region_c_vol[] = {3.45e6, 3.5e6, 1.0e6, 3.5e6};
+  const double region_initial_temperature[] = {1300.0, 1500.0, 1200.0, 1600.0};
+  const uint8_t region_heat_source[] = {0, 1, 0, 1};
+
+  char error[256] = {};
+  constexpr uint32_t region_count = static_cast<uint32_t>(sizeof(region_x) / sizeof(region_x[0]));
+  constexpr double spatial_step = 0.02;
+  constexpr double time_step = 0.1;
+  constexpr double simulation_time = 3600.0;
+  constexpr uint32_t sample_col_count = 20;
+  constexpr uint32_t sample_row_count = 20;
+  constexpr uint32_t sample_count = sample_col_count * sample_row_count;
+  constexpr double ambient_temperature = 20.0;
+  constexpr double emissivity = 0.9;
+  constexpr double plate_thickness = 10;
+
+  std::vector<double> x(sample_count);
+  std::vector<double> y(sample_count);
+  std::vector<double> temperatures(sample_count);
+  std::vector<double> temperatures_adiabatic(sample_count);
+
+  if (lvt_compute_temperatures_2d_with_radiation(region_x, region_y, region_width, region_height, region_lambda,
+                                                 region_c_vol, region_initial_temperature, region_heat_source,
+                                                 region_count, spatial_step, time_step, simulation_time,
+                                                 ambient_temperature, emissivity, plate_thickness, x.data(), y.data(),
+                                                 temperatures.data(), sample_col_count, sample_row_count, error,
+                                                 sizeof(error)) != 0) {
+    std::fprintf(stderr, "radiation compute failed: %s\n", error);
+    return 1;
+  }
+
+  if (lvt_compute_temperatures_2d(region_x, region_y, region_width, region_height, region_lambda, region_c_vol,
+                                  region_initial_temperature, region_heat_source, region_count, spatial_step, time_step,
+                                  simulation_time, x.data(), y.data(), temperatures_adiabatic.data(), sample_col_count,
+                                  sample_row_count, error, sizeof(error)) != 0) {
+    std::fprintf(stderr, "adiabatic compute failed: %s\n", error);
+    return 1;
+  }
+
+  const double corner_radiation = temperatures[0];
+  const double corner_adiabatic = temperatures_adiabatic[0];
+  if (corner_radiation >= corner_adiabatic) {
+    std::fprintf(stderr, "expected corner temperature with radiation (%.6f) < adiabatic (%.6f)\n", corner_radiation,
+                 corner_adiabatic);
+    return 1;
+  }
+
+  std::fprintf(stderr, "corner radiation=%.6f adiabatic=%.6f\n", corner_radiation, corner_adiabatic);
+
+  std::printf("x_m,y_m,temperature\n");
+  for (uint32_t i = 0; i < sample_count; i++) {
+    std::printf("%.6f,%.6f,%.6f\n", x[i], y[i], temperatures[i]);
+  }
+
+  return 0;
+}

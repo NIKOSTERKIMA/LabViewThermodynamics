@@ -1,8 +1,23 @@
 #include "lvt_naive.h"
 #include "lvt_internal.h"
 
-#include <utility>
+#include <cmath>
+#include <cstddef>
+#include <optional>
+#include <string>
 #include <vector>
+
+static constexpr double STEFAN_BOLTZMANN = 5.670374419e-8;
+
+static double radiation_face_delta(double temperature, const RadiationParams &radiation, double spatial_step,
+                                   double c_vol, double time_step) {
+  const double dx = spatial_step;
+  const double volume = dx * dx * radiation.plate_thickness;
+  const double face_area = dx * radiation.plate_thickness;
+  const double q_rad =
+      radiation.emissivity * STEFAN_BOLTZMANN * (std::pow(temperature, 4) - std::pow(radiation.ambient_temperature, 4));
+  return -q_rad * face_area * time_step / (c_vol * volume);
+}
 
 std::optional<std::string> lvt_compute_temperatures_naive_1d(SpatialGrid1D &grid, double time_step,
                                                              double simulation_time) {
@@ -95,7 +110,28 @@ std::optional<std::string> lvt_compute_temperatures_naive_2d(SpatialGrid2D &grid
                     (current[index + grid.col_count] - current[index]);
         }
 
-        next[index] = current[index] + (flux_x + flux_y) * time_step / (center.c_vol * dx2);
+        double radiation_delta = 0.0;
+        if (grid.radiation.has_value()) {
+          const RadiationParams &radiation = *grid.radiation;
+          if (col == 0) {
+            radiation_delta +=
+                radiation_face_delta(current[index], radiation, grid.spatial_step, center.c_vol, time_step);
+          }
+          if (col + 1 == grid.col_count) {
+            radiation_delta +=
+                radiation_face_delta(current[index], radiation, grid.spatial_step, center.c_vol, time_step);
+          }
+          if (row == 0) {
+            radiation_delta +=
+                radiation_face_delta(current[index], radiation, grid.spatial_step, center.c_vol, time_step);
+          }
+          if (row + 1 == grid.row_count) {
+            radiation_delta +=
+                radiation_face_delta(current[index], radiation, grid.spatial_step, center.c_vol, time_step);
+          }
+        }
+
+        next[index] = current[index] + (flux_x + flux_y) * time_step / (center.c_vol * dx2) + radiation_delta;
       }
     }
 

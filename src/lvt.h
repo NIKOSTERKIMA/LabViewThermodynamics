@@ -34,43 +34,29 @@ typedef unsigned long long uint64_t;
 extern "C" {
 #endif
 
-#pragma pack(push, 1)
-
-typedef struct {
-  double x;
-  double length;
-  double lambda;
-  double c_vol;
-  double initial_temperature;
-  uint8_t heat_source;
-} Region1D;
-
-typedef struct {
-  double x;
-  double y;
-  double width;
-  double height;
-  double lambda;
-  double c_vol;
-  double initial_temperature;
-  uint8_t heat_source;
-} Region2D;
-
-#pragma pack(pop)
-
-// Shared LabView facing dll interface. Backend dispatch argument chooses concrete computational engine/implementation.
-// 0 - naive, 1 - SIMD, 2 - SIMD+MT, 3 - naive CUDA, 4 - optimized CUDA
 // Returns 0 if successful, 1 if error.
-LVT_API uint8_t LVT_CALL lvt_compute_temperatures_1d(Region1D *regions, uint32_t region_count, double spatial_step,
-                                                     double time_step, double simulation_time, double *x_out,
-                                                     double *temperatures_out, uint32_t point_count,
-                                                     char *error_message, uint32_t error_message_length,
-                                                     int8_t backend_dispatch);
-LVT_API uint8_t LVT_CALL lvt_compute_temperatures_2d(Region2D *regions, uint32_t region_count, double spatial_step,
-                                                     double time_step, double simulation_time, double *x_out,
-                                                     double *y_out, double *temperatures_out, uint32_t sample_col_count,
-                                                     uint32_t sample_row_count, char *error_message,
-                                                     uint32_t error_message_length, int8_t backend_dispatch);
+LVT_API uint8_t LVT_CALL lvt_compute_temperatures_1d(const double *region_x, const double *region_length,
+                                                     const double *region_lambda, const double *region_c_vol,
+                                                     const double *region_initial_temperature,
+                                                     const uint8_t *region_heat_source, uint32_t region_count,
+                                                     double spatial_step, double time_step, double simulation_time,
+                                                     double *x_out, double *temperatures_out, uint32_t point_count,
+                                                     char *error_message, uint32_t error_message_length);
+
+LVT_API uint8_t LVT_CALL lvt_compute_temperatures_2d(
+    const double *region_x, const double *region_y, const double *region_width, const double *region_height,
+    const double *region_lambda, const double *region_c_vol, const double *region_initial_temperature,
+    const uint8_t *region_heat_source, uint32_t region_count, double spatial_step, double time_step,
+    double simulation_time, double *x_out, double *y_out, double *temperatures_out, uint32_t sample_col_count,
+    uint32_t sample_row_count, char *error_message, uint32_t error_message_length);
+
+LVT_API uint8_t LVT_CALL lvt_compute_temperatures_2d_with_radiation(
+    const double *region_x, const double *region_y, const double *region_width, const double *region_height,
+    const double *region_lambda, const double *region_c_vol, const double *region_initial_temperature,
+    const uint8_t *region_heat_source, uint32_t region_count, double spatial_step, double time_step,
+    double simulation_time, double ambient_temperature, double emissivity, double plate_thickness, double *x_out,
+    double *y_out, double *temperatures_out, uint32_t sample_col_count, uint32_t sample_row_count, char *error_message,
+    uint32_t error_message_length);
 
 #ifdef __cplusplus
 }
